@@ -2,8 +2,8 @@
 // Plain Telegram Bot API, no npm dependencies. Secrets come from Netlify environment variables.
 const TOKEN = process.env.BOT_TOKEN;
 const MINI_APP_URL = process.env.MINI_APP_URL;
-const CHANNEL = process.env.CHANNEL || "@Ieltswithmustaffa";
-const CHANNEL_LINK = "https://t.me/Ieltswithmustaffa";
+const CHANNEL = process.env.CHANNEL || "@zaytryn";
+const CHANNEL_LINK = "https://t.me/zaytryn";
 const SECRET = process.env.WEBHOOK_SECRET;
 
 const T = {
