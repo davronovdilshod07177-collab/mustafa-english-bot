@@ -1,116 +1,90 @@
-// Mustafa English · Bot, phase 1
-// Plain Telegram Bot API, no npm dependencies. Secrets come from Netlify environment variables.
+// netlify/functions/check.js
+// Verifies Telegram Mini App initData on the server, then returns the user's role and channel membership.
+const crypto = require("crypto");
+
 const TOKEN = process.env.BOT_TOKEN;
-const MINI_APP_URL = process.env.MINI_APP_URL;
-const CHANNEL = process.env.CHANNEL || "@zaytryn";
-const CHANNEL_LINK = "https://t.me/zaytryn";
-const SECRET = process.env.WEBHOOK_SECRET;
+const CHANNEL = process.env.CHANNEL || "@Ieltswithmustaffa";
+const ADMIN_IDS = (process.env.ADMIN_IDS || "5456493265")
+  .split(",")
+  .map((s) => s.trim())
+  .filter(Boolean);
+const JSON_HEADERS = { "Content-Type": "application/json" };
 
-const T = {
-  en: {
-    sub: "One quick step before we begin\n\nJoin Mustafa's official channel to unlock your dashboard and community features. Once you've joined, tap Check Subscription.",
-    join: "Join channel",
-    check: "Check Subscription",
-    open: "Open Dashboard",
-    ready: "You're all set. Tap below to open your dashboard.",
-    missing:
-      "We couldn't see your subscription yet. Join the channel, then tap Check Subscription again.",
-  },
-  uz: {
-    sub: "Boshlashga bir qadam qoldi\n\nKabinetingiz va hamjamiyat imkoniyatlarini ochish uchun Mustafaning rasmiy kanaliga obuna bo'ling. So'ng Obunani tekshirish tugmasini bosing.",
-    join: "Kanalga qo'shilish",
-    check: "Obunani tekshirish",
-    open: "Boshqaruv panelini ochish",
-    ready: "Hammasi tayyor. Panelni ochish uchun quyidagi tugmani bosing.",
-    missing:
-      "Obunangiz hali topilmadi. Kanalga qo'shiling, so'ng Obunani tekshirish tugmasini qayta bosing.",
-  },
-};
-
-async function api(method, body) {
-  const r = await fetch(`https://api.telegram.org/bot${TOKEN}/${method}`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(body),
-  });
-  const j = await r.json();
-  if (!j.ok) console.error(method, j.description);
-  return j;
+function verifyInitData(initData) {
+  if (!TOKEN || !initData) return null;
+  const params = new URLSearchParams(initData);
+  const hash = params.get("hash");
+  if (!hash) return null;
+  params.delete("hash");
+  const dataCheck = [...params.entries()]
+    .sort(([a], [b]) => (a < b ? -1 : a > b ? 1 : 0))
+    .map(([k, v]) => `${k}=${v}`)
+    .join("\n");
+  const secret = crypto
+    .createHmac("sha256", "WebAppData")
+    .update(TOKEN)
+    .digest();
+  const calc = crypto
+    .createHmac("sha256", secret)
+    .update(dataCheck)
+    .digest("hex");
+  const a = Buffer.from(calc);
+  const b = Buffer.from(hash);
+  if (a.length !== b.length || !crypto.timingSafeEqual(a, b)) return null;
+  const authDate = Number(params.get("auth_date") || 0);
+  if (!authDate || Date.now() / 1000 - authDate > 86400) return null;
+  const user = JSON.parse(params.get("user") || "null");
+  return user && user.id ? user : null;
 }
 
-async function subscribed(userId) {
-  const j = await api("getChatMember", { chat_id: CHANNEL, user_id: userId });
+async function isSubscribed(userId) {
+  const r = await fetch(`https://api.telegram.org/bot${TOKEN}/getChatMember`, {
+    method: "POST",
+    headers: JSON_HEADERS,
+    body: JSON.stringify({ chat_id: CHANNEL, user_id: userId }),
+  });
+  const j = await r.json();
   return (
     j.ok && ["creator", "administrator", "member"].includes(j.result.status)
   );
 }
 
-function subScreen(L) {
-  return {
-    text: T[L].sub,
-    reply_markup: {
-      inline_keyboard: [
-        [{ text: T[L].join, url: CHANNEL_LINK }],
-        [{ text: T[L].check, callback_data: "check:" + L }],
-      ],
-    },
-  };
-}
-
-function readyScreen(L) {
-  return {
-    text: T[L].ready,
-    reply_markup: {
-      inline_keyboard: [[{ text: T[L].open, web_app: { url: MINI_APP_URL } }]],
-    },
-  };
-}
-
 exports.handler = async (event) => {
-  const h = event.headers || {};
-  if (SECRET && h["x-telegram-bot-api-secret-token"] !== SECRET) {
-    return { statusCode: 401, body: "unauthorized" };
+  if (event.httpMethod !== "POST") {
+    return {
+      statusCode: 405,
+      headers: JSON_HEADERS,
+      body: JSON.stringify({ ok: false }),
+    };
   }
   try {
-    const u = JSON.parse(event.body || "{}");
-    if (u.message && /^\/start(\s|@|$)/.test(u.message.text || "")) {
-      await api("sendMessage", {
-        chat_id: u.message.chat.id,
-        text: "Welcome to Mustafa English! · Mustafa English olamiga xush kelibsiz!\n\nChoose your language · Tilni tanlang",
-        reply_markup: {
-          inline_keyboard: [
-            [
-              { text: "English", callback_data: "lang:en" },
-              { text: "O'zbekcha", callback_data: "lang:uz" },
-            ],
-          ],
-        },
-      });
-    } else if (u.callback_query) {
-      const cq = u.callback_query;
-      const parts = (cq.data || "").split(":");
-      const L = parts[1] === "uz" ? "uz" : "en";
-      const chat = cq.message.chat.id;
-      const mid = cq.message.message_id;
-      await api("answerCallbackQuery", { callback_query_id: cq.id });
-      if (parts[0] === "lang") {
-        await api(
-          "editMessageText",
-          Object.assign({ chat_id: chat, message_id: mid }, subScreen(L))
-        );
-      } else if (parts[0] === "check") {
-        const ok = await subscribed(cq.from.id);
-        const screen = ok
-          ? readyScreen(L)
-          : Object.assign(subScreen(L), { text: T[L].missing });
-        await api(
-          "editMessageText",
-          Object.assign({ chat_id: chat, message_id: mid }, screen)
-        );
-      }
+    const { initData } = JSON.parse(event.body || "{}");
+    const user = verifyInitData(initData);
+    if (!user) {
+      return {
+        statusCode: 401,
+        headers: JSON_HEADERS,
+        body: JSON.stringify({ ok: false, error: "invalid" }),
+      };
     }
+    const isAdmin = ADMIN_IDS.includes(String(user.id));
+    const subscribed = await isSubscribed(user.id);
+    return {
+      statusCode: 200,
+      headers: JSON_HEADERS,
+      body: JSON.stringify({
+        ok: true,
+        role: isAdmin ? "admin" : "member",
+        subscribed,
+        link: "https://t.me/" + CHANNEL.replace("@", ""),
+      }),
+    };
   } catch (e) {
-    console.error("handler error", e);
+    console.error("check error", e);
+    return {
+      statusCode: 500,
+      headers: JSON_HEADERS,
+      body: JSON.stringify({ ok: false }),
+    };
   }
-  return { statusCode: 200, body: "ok" };
 };
