@@ -1,0 +1,251 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Mustafa English · Prototype</title>
+<style>
+:root{--bg:#080D18;--surface:#111A2B;--border:#26344B;--text:#F5F8FF;--muted:#8E9BB5;--accent:#4A8DFF;--mint:#42D9B0;--gold:#F3B95E;--shadow:0 8px 24px rgba(0,0,0,.35);color-scheme:dark}
+:root[data-theme="light"]{--bg:#F6F8FC;--surface:#FFFFFF;--border:#E5EBF3;--text:#132036;--muted:#65748B;--accent:#2563EB;--mint:#0E9F7E;--gold:#B7791F;--shadow:0 8px 24px rgba(19,32,54,.08);color-scheme:light}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+[hidden]{display:none!important}
+body{margin:0;background:var(--bg);color:var(--text);font:400 15px/1.5 Inter,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;transition:background-color .35s ease,color .35s ease}
+.wrap{max-width:460px;margin:0 auto;padding:calc(env(safe-area-inset-top,0px) + 16px) 16px calc(env(safe-area-inset-bottom,0px) + 110px)}
+h1{font-size:24px;line-height:1.2;margin:0;font-weight:700;letter-spacing:-.01em}
+h2{font-size:17px;font-weight:600;margin:22px 0 10px}
+p{margin:0}
+.muted,.label{color:var(--muted);font-size:13px}
+.top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:16px}
+.badge{display:inline-block;font-size:11px;letter-spacing:.06em;color:var(--gold);border:1px solid color-mix(in srgb,var(--gold) 45%,transparent);padding:2px 8px;border-radius:999px}
+.seg{display:inline-flex;flex:none;background:var(--surface);border:1px solid var(--border);border-radius:999px;padding:3px;gap:2px}
+.seg button{border:0;background:transparent;color:var(--muted);min-height:36px;padding:0 12px;border-radius:999px;font:inherit;font-size:13px;cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--accent);color:#fff}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:16px;box-shadow:var(--shadow)}
+button.card{font:inherit;font-weight:600;color:var(--text);text-align:left;cursor:pointer;min-height:96px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.num{font-size:26px;font-weight:700;font-variant-numeric:tabular-nums;letter-spacing:-.01em;margin-top:4px}
+.row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 0;border-bottom:1px solid var(--border)}
+.row:first-child{padding-top:0}
+.row:last-child{border-bottom:0;padding-bottom:0}
+.av{width:36px;height:36px;border-radius:50%;display:grid;place-items:center;font-size:13px;font-weight:600;color:#fff;background:linear-gradient(135deg,var(--accent),var(--mint));flex:none}
+.pill{font-size:12px;padding:3px 10px;border-radius:999px;background:color-mix(in srgb,var(--mint) 18%,transparent);color:var(--mint);white-space:nowrap}
+.pill.warn{background:color-mix(in srgb,var(--gold) 20%,transparent);color:var(--gold)}
+.btn{min-height:44px;border:0;border-radius:14px;padding:0 16px;font:inherit;font-weight:600;background:var(--accent);color:#fff;cursor:pointer;display:grid;place-items:center;text-decoration:none;transition:transform .15s ease}
+.btn:active,button.card:active,.chip:active{transform:scale(.98)}
+.btn.ghost{background:transparent;color:var(--accent);box-shadow:inset 0 0 0 1px var(--border)}
+input,textarea,select{width:100%;font:inherit;color:var(--text);background:var(--bg);border:1px solid var(--border);border-radius:14px;padding:10px 12px;min-height:44px}
+textarea{min-height:76px;resize:vertical}
+.field{display:grid;gap:6px;margin-bottom:12px}
+.hero-img{width:100%;height:170px;object-fit:cover;border-radius:18px;margin-bottom:16px;display:block}
+.hero{height:170px;border-radius:18px;display:grid;place-items:center;text-align:center;padding:16px;color:var(--muted);font-size:13px;border:1px dashed var(--border);background:radial-gradient(120% 90% at 30% 0%,color-mix(in srgb,var(--accent) 30%,transparent),transparent 65%),var(--surface);margin-bottom:16px}
+.chips{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;padding:2px 0}
+.chips::-webkit-scrollbar{display:none}
+.chip{flex:none;min-height:36px;padding:0 14px;border-radius:999px;border:1px solid var(--border);background:var(--surface);color:var(--text);font:inherit;font-size:13px;cursor:pointer}
+.chip[aria-pressed="true"]{border-color:var(--accent);color:var(--accent)}
+.dock{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(env(safe-area-inset-bottom,0px) + 12px);width:min(428px,calc(100% - 32px));display:grid;grid-template-columns:repeat(5,1fr);background:var(--surface);border:1px solid var(--border);border-radius:24px;padding:6px;box-shadow:var(--shadow);z-index:5}
+.ind{position:absolute;top:6px;bottom:6px;left:6px;width:calc((100% - 12px) / 5);border-radius:18px;background:color-mix(in srgb,var(--accent) 16%,transparent);transition:transform .35s cubic-bezier(.2,.8,.2,1),opacity .2s}
+.dock button{position:relative;z-index:1;background:none;border:0;color:var(--muted);font:inherit;font-size:11px;min-height:52px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;cursor:pointer;padding:6px 0}
+.dock button[aria-current="true"]{color:var(--accent);font-weight:600}
+.dock svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+.toast{position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom,0px) + 92px);transform:translate(-50%,12px);background:var(--text);color:var(--bg);padding:10px 16px;border-radius:12px;font-size:13px;opacity:0;transition:opacity .25s,transform .25s;pointer-events:none;white-space:nowrap;z-index:9}
+.toast.on{opacity:1;transform:translate(-50%,0)}
+.screen{animation:in .28s ease both}
+@keyframes in{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+</style>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+</head>
+<body>
+<div class="wrap"><div id="app"></div></div>
+<nav id="dock" class="dock" aria-label="Main"></nav>
+<div id="toast" class="toast" role="status"></div>
+<script>
+if(window.Telegram&&Telegram.WebApp){Telegram.WebApp.ready();Telegram.WebApp.expand();}
+const SMP_EN="Weekly speaking session starts Saturday at 19:00. Join the voice chat!";
+const SMP_UZ="Haftalik speaking sessiya shanba kuni soat 19:00 da boshlanadi. Ovozli chatga qo'shiling!";
+const D={
+en:{appName:"Mustafa English",demo:"DEMO DATA",home:"Overview",chats:"Chats",board:"Leaderboard",ai:"AI Studio",more:"More",people:"People",broadcast:"Broadcast Studio",admin:"Admin Center",settings:"Settings",welcome:"Welcome",theme:"Theme",system:"System",light:"Light",dark:"Dark",
+greet:"Good morning, Admin",groups:"Active groups",joinsToday:"Joined today",netGrowth:"Net growth",bans:"Bans",trend:"7-day joins",topInviters:"Top inviters",aiSummary:"AI summary",aiSummaryText:"Yesterday: 42 joined, 11 left, 2 banned. Data coverage 96%.",reportLine:"Daily report 09:00 · Asia/Tashkent",verified:"verified",search:"Search members",ok:"Healthy",missing:"Missing permission: Ban users",unknown:"Unknown",review:"Review",
+todayR:"Today",weekR:"Week",monthR:"Month",allR:"All time",rankNote:"Verified referrals only. Flags are advisory, not accusations.",
+tl1:"Dilnoza joined · verified invite link",tl2:"Jasur left the group · kept in audit log",tl3:"Member 4821 banned by admin Aziz",tl4:"Member 5190 joined · inviter: Unknown",audit:"Audit",mod:"Moderation",
+aud1:"Single chat",aud2:"Selected chats",aud3:"Opted-in bot users",audience:"Audience",textEn:"Message (English)",textUz:"Message (Uzbek)",btnLabel:"Button label",btnTxt:"Join voice chat",when:"Send at",preview:"Preview",schedule:"Schedule",sent:"Scheduled (demo): no message was sent",log:"Delivery log",logA:"Sent 09:00 · 1,184 delivered · by Aziz",logB:"Scheduled 18:00 · pending",
+askPh:"Ask about your community…",ask:"Ask",q1:"Who invited the most members this week?",q2:"Which group grew fastest?",q3:"Summarize yesterday's moderation",
+ansBody:"Top inviter this week: Dilnoza, with 14 verified invites.",ansMeta:"Range: last 7 days · Scope: Main group · Missing data: 3 joins before bot activation",aiNote:"Prototype: fixed demo output. Live answers will show underlying counts and source records.",
+roles:"Roles",owner:"Owner",roleHead:"Head admin",roleAdmin:"Admin",handover:"Ownership handover",handoverText:"Not started. Requires explicit approval from the current owner, identity re-verification and an audit record.",secLog:"Security log",sec1:"Role granted: Admin · by Owner · 09:40",sec2:"Blocked: admin outside chat scope (2 chats)",sec3:"Custom button 'Learning' published · Aziz · 11:05",
+lang:"Language",tz:"Timezone",notif:"Notifications",subs:"Mandatory subscription",subsNote:"Confirm the channel in bot settings before enabling.",customBtns:"Custom buttons",btnRoute:"Mini App route",btnUrl:"URL",btnPreview:"Preview",learnBtn:"Learning",helpBtn:"Help & Contacts",
+welcomeH:"Welcome to Mustafa English!",welcomeP:"Learn, connect, and grow with our community. Choose your language to get started.",start:"Start Learning",openDash:"Open Dashboard",subTitle:"One quick step before we begin",subP:"Join Mustafa's official channel to unlock your dashboard and community features. Once you've joined, tap Check Subscription.",joinCh:"Join channel",checkSub:"Check Subscription",demoToast:"Demo only: no live Telegram check",portrait:"Teacher portrait: added after written permission",memberTitle:"Learning area",memberOk:"Subscription confirmed. Welcome to the community!",memberSoonTitle:"Coming soon",memberSoon:"Lessons and speaking practice will appear here.",back:"Back",subOk:"Subscription confirmed",subNo:"Subscription not found. Join the channel and check again.",guestNote:"This page works inside Telegram. Open it from the bot."},
+uz:{appName:"Mustafa English",demo:"DEMO MA'LUMOT",home:"Bosh sahifa",chats:"Guruhlar",board:"Reyting",ai:"AI studiya",more:"Yana",people:"A'zolar",broadcast:"Xabar studiyasi",admin:"Admin markazi",settings:"Sozlamalar",welcome:"Xush kelibsiz",theme:"Mavzu",system:"Tizim",light:"Yorug'",dark:"Qorong'i",
+greet:"Xayrli kun, Admin",groups:"Faol guruhlar",joinsToday:"Bugun qo'shildi",netGrowth:"Sof o'sish",bans:"Bloklanganlar",trend:"7 kunlik qo'shilishlar",topInviters:"Eng faol taklifchilar",aiSummary:"AI xulosa",aiSummaryText:"Kecha: 42 ta qo'shildi, 11 ta chiqdi, 2 ta bloklandi. Ma'lumot qamrovi 96%.",reportLine:"Kunlik hisobot 09:00 · Asia/Tashkent",verified:"tasdiqlangan",search:"A'zolarni qidirish",ok:"Yaxshi",missing:"Ruxsat yetishmaydi: bloklash",unknown:"Noma'lum",review:"Tekshiruv",
+todayR:"Bugun",weekR:"Hafta",monthR:"Oy",allR:"Hammasi",rankNote:"Faqat tasdiqlangan takliflar. Belgilar maslahat tarzida, ayblov emas.",
+tl1:"Dilnoza qo'shildi · tasdiqlangan havola",tl2:"Jasur guruhdan chiqdi · audit jurnalida saqlandi",tl3:"4821-a'zo admin Aziz tomonidan bloklandi",tl4:"5190-a'zo qo'shildi · taklifchi: Noma'lum",audit:"Audit",mod:"Moderatsiya",
+aud1:"Bitta guruh",aud2:"Tanlangan guruhlar",aud3:"Botga obuna bo'lganlar",audience:"Auditoriya",textEn:"Xabar (ingliz)",textUz:"Xabar (o'zbek)",btnLabel:"Tugma matni",btnTxt:"Ovozli chatga qo'shilish",when:"Yuborish vaqti",preview:"Ko'rish",schedule:"Rejalashtirish",sent:"Rejalashtirildi (demo): xabar yuborilmadi",log:"Yetkazish jurnali",logA:"Yuborildi 09:00 · 1 184 ta yetkazildi · Aziz",logB:"Rejalashtirilgan 18:00 · kutilmoqda",
+askPh:"Jamoangiz haqida so'rang…",ask:"So'rash",q1:"Bu hafta eng ko'p kim taklif qildi?",q2:"Qaysi guruh eng tez o'sdi?",q3:"Kechagi moderatsiyani xulosalang",
+ansBody:"Bu hafta eng faol taklifchi: Dilnoza, 14 ta tasdiqlangan taklif bilan.",ansMeta:"Oraliq: so'nggi 7 kun · Qamrov: asosiy guruh · Yetishmayotgan ma'lumot: bot faollashuvidan oldin 3 ta qo'shilish",aiNote:"Prototip: belgilangan demo javob. Jonli javoblarda asosiy hisoblar va manba yozuvlari ko'rsatiladi.",
+roles:"Rollar",owner:"Egasi",roleHead:"Bosh admin",roleAdmin:"Admin",handover:"Egalikni topshirish",handoverText:"Boshlanmagan. Joriy egadan aniq tasdiq, shaxsni qayta tekshirish va audit yozuvi talab etiladi.",secLog:"Xavfsizlik jurnali",sec1:"Rol berildi: Admin · Egasi tomonidan · 09:40",sec2:"Bloklandi: admin ruxsat doirasidan tashqari (2 ta guruh)",sec3:"Maxsus tugma 'O'qish' nashr etildi · Aziz · 11:05",
+lang:"Til",tz:"Vaqt mintaqasi",notif:"Bildirishnomalar",subs:"Majburiy obuna",subsNote:"Yoqishdan oldin bot sozlamalarida kanalni tasdiqlang.",customBtns:"Maxsus tugmalar",btnRoute:"Mini App bo'limi",btnUrl:"Havola",btnPreview:"Ko'rish",learnBtn:"O'qish",helpBtn:"Yordam va aloqa",
+welcomeH:"Mustafa English olamiga xush kelibsiz!",welcomeP:"Birga o'rganamiz, do'stlarni taklif qilamiz va yutuqlar sari intilamiz. Boshlash uchun tilni tanlang.",start:"O'rganishni boshlash",openDash:"Boshqaruv panelini ochish",subTitle:"Boshlashga bir qadam qoldi",subP:"Kabinetingiz va hamjamiyat imkoniyatlarini ochish uchun Mustafaning rasmiy kanaliga obuna bo'ling. So'ng Obunani tekshirish tugmasini bosing.",joinCh:"Kanalga qo'shilish",checkSub:"Obunani tekshirish",demoToast:"Demo: jonli Telegram tekshiruvi yo'q",portrait:"O'qituvchi surati: yozma ruxsatdan keyin qo'shiladi",memberTitle:"O'quv bo'limi",memberOk:"Obuna tasdiqlandi. Hamjamiyatga xush kelibsiz!",memberSoonTitle:"Tez orada",memberSoon:"Darslar va speaking mashqlari shu yerda chiqadi.",back:"Orqaga",subOk:"Obuna tasdiqlandi",subNo:"Obuna topilmadi. Kanalga qo'shilib, qayta tekshiring.",guestNote:"Bu sahifa Telegram ichida ishlaydi. Uni botdan oching."}
+};
+const TABS=[["home","home"],["chats","chats"],["board","board"],["ai","ai"],["more","more"]];
+const ICON={home:'<path d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/>',chats:'<path d="M4 5h16v11H8l-4 4z"/>',board:'<path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0zM7 6H4v2a3 3 0 0 0 3 3M17 6h3v2a3 3 0 0 1-3 3"/>',ai:'<path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"/>',more:'<circle cx="5" cy="12" r="1.6" fill="currentColor"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/><circle cx="19" cy="12" r="1.6" fill="currentColor"/>'};
+const LB=[{n:"Dilnoza",i:"DI",v:14,f:0},{n:"Jasur",i:"JA",v:11,f:0},{n:"Sardor",i:"SA",v:9,f:1},{n:"Malika",i:"MA",v:6,f:0},{n:"Bekzod",i:"BE",v:4,f:0}];
+const CH=[["Mustafa English · Main group",1240,1],["IELTS Speaking Club",386,0],["Announcements channel",2910,1]];
+const MULT=[.3,.7,1,1.6];
+let L="en",page="welcome",theme="system",range=2,tt,role="guest",subscribed=false,link="https://t.me/zaytryn";
+const $=s=>document.querySelector(s),app=$("#app"),dock=$("#dock");
+const t=k=>D[L][k]??k;
+
+dock.innerHTML='<span class="ind"></span>'+TABS.map(([k])=>`<button data-go="${k}"><svg viewBox="0 0 24 24" aria-hidden="true">${ICON[k]}</svg><span></span></button>`).join("");
+const ind=dock.querySelector(".ind");
+function paintDock(){
+ const grp=["home","chats","board","ai"].includes(page)?page:(page==="welcome"?"":"more");
+ const cur=TABS.findIndex(([k])=>k===grp);
+ dock.hidden=page==="welcome"||page==="member"||role!=="admin";
+ ind.style.transform=`translateX(${Math.max(cur,0)*100}%)`;
+ ind.style.opacity=cur<0?0:1;
+ dock.querySelectorAll("button").forEach((b,i)=>{b.setAttribute("aria-current",i===cur);b.lastChild.textContent=t(TABS[i][1]);});
+}
+
+const seg=()=>`<div class="seg" role="group" aria-label="Language"><button data-lang="en" aria-pressed="${L==="en"}">EN</button><button data-lang="uz" aria-pressed="${L==="uz"}">UZ</button></div>`;
+const head=title=>`<div class="top"><div><span class="badge">${t("demo")}</span><h1 style="margin-top:10px">${title}</h1></div>${seg()}</div>`;
+const spark=v=>{const w=300,h=80,m=Math.max(...v),pts=v.map((y,i)=>`${(i*w/(v.length-1)).toFixed(1)},${(h-8-y/m*(h-16)).toFixed(1)}`).join(" ");return `<svg viewBox="0 0 ${w} ${h}" width="100%" height="80" preserveAspectRatio="none" role="img" aria-label="${t("trend")}"><polyline points="${pts}" fill="none" stroke="var(--accent)" stroke-width="2" vector-effect="non-scaling-stroke" stroke-linejoin="round" stroke-linecap="round"/></svg>`};
+
+const S={
+welcome:()=>`<div class="top"><span class="badge">${t("demo")}</span>${seg()}</div>
+<img class="hero-img" src="teacher.jpg" alt="Teacher Mustafa">
+<h1>${t("welcomeH")}</h1>
+<p class="muted" style="margin:8px 0 18px">${t("welcomeP")}</p>
+${role==="guest"?`<div class="card"><p class="muted">${t("guestNote")}</p></div>`:`<div class="grid2"><button class="btn" data-act="start">${t("start")}</button>${role==="admin"?`<button class="btn ghost" data-act="panel">${t("openDash")}</button>`:""}</div>`}`,
+member:()=>head(t("memberTitle"))+((subscribed||role==="admin")
+ ?`<div class="card"><p>${t("memberOk")}</p></div><h2>${t("memberSoonTitle")}</h2><div class="card"><p class="muted">${t("memberSoon")}</p></div>`
+ :`<div class="card"><p class="muted" style="margin-bottom:14px">${t("subP")}</p><div class="grid2"><a class="btn ghost" href="${link}" target="_blank" rel="noopener">${t("joinCh")}</a><button class="btn" data-act="check">${t("checkSub")}</button></div></div>`)
+ +`<div style="margin-top:16px"><button class="btn ghost" data-act="back">${t("back")}</button></div>`,
+
+home:()=>head(t("greet"))+`
+<div class="grid2">
+<div class="card"><div class="label">${t("groups")}</div><div class="num">3</div></div>
+<div class="card"><div class="label">${t("joinsToday")}</div><div class="num">42</div></div>
+<div class="card"><div class="label">${t("netGrowth")}</div><div class="num" style="color:var(--mint)">+31</div></div>
+<div class="card"><div class="label">${t("bans")}</div><div class="num" style="color:var(--gold)">2</div></div>
+</div>
+<h2>${t("trend")}</h2><div class="card">${spark([12,18,15,22,30,27,42])}</div>
+<h2>${t("topInviters")}</h2><div class="card">${LB.slice(0,3).map(x=>`<div class="row"><div style="display:flex;gap:12px;align-items:center"><div class="av">${x.i}</div><span>${x.n}</span></div><span class="label">${x.v} ${t("verified")}</span></div>`).join("")}</div>
+<h2>${t("aiSummary")}</h2><div class="card"><p>${t("aiSummaryText")}</p><p class="label" style="margin-top:8px">${t("reportLine")}</p></div>`,
+
+chats:()=>head(t("chats"))+CH.map(([n,m,ok])=>`<div class="card" style="margin-bottom:12px"><div style="font-weight:600">${n}</div><div class="label" style="margin-top:2px">${m.toLocaleString("en-US")} · ${t("reportLine")}</div><div style="margin-top:12px"><span class="pill ${ok?"":"warn"}">${ok?t("ok"):t("missing")}</span></div></div>`).join(""),
+
+people:()=>head(t("people"))+`<input id="srch" type="search" placeholder="${t("search")}" style="margin-bottom:12px">
+<div class="card">
+<div class="row prow"><span style="flex:1">${t("tl1")}</span><span class="pill">${t("verified")}</span></div>
+<div class="row prow"><span style="flex:1">${t("tl2")}</span><span class="pill">${t("audit")}</span></div>
+<div class="row prow"><span style="flex:1">${t("tl3")}</span><span class="pill">${t("mod")}</span></div>
+<div class="row prow"><span style="flex:1">${t("tl4")}</span><span class="pill warn">${t("unknown")}</span></div>
+</div>`,
+
+board:()=>head(t("board"))+`<div class="chips">${["todayR","weekR","monthR","allR"].map((k,i)=>`<button class="chip" data-range="${i}" aria-pressed="${i===range}">${t(k)}</button>`).join("")}</div>
+<p class="muted" style="margin:12px 0 14px">${t("rankNote")}</p>
+<div class="card">${LB.map((x,i)=>`<div class="row"><div style="display:flex;gap:12px;align-items:center"><span style="width:20px;font-weight:700;font-variant-numeric:tabular-nums;color:${i<3?"var(--gold)":"var(--muted)"}">${i+1}</span><div class="av">${x.i}</div><div><div>${x.n}</div><div class="label">${Math.round(x.v*MULT[range])} ${t("verified")}</div></div></div>${x.f?`<span class="pill warn">${t("review")}</span>`:""}</div>`).join("")}</div>`,
+
+ai:()=>head(t("ai"))+`<div class="chips">${[1,2,3].map(i=>`<button class="chip" data-q="${i}">${t("q"+i)}</button>`).join("")}</div>
+<div style="display:flex;gap:8px;margin-top:14px"><input id="aiIn" placeholder="${t("askPh")}" style="flex:1"><button class="btn" data-act="ask" style="padding:0 16px">${t("ask")}</button></div>
+<div id="ans" style="margin-top:14px"></div>`,
+
+more:()=>head(t("more"))+`<div class="grid2">${[["people","people"],["broadcast","broadcast"],["admin","admin"],["settings","settings"],["welcome","welcome"]].map(([p,k])=>`<button class="card" data-go="${p}">${t(k)}</button>`).join("")}</div>`,
+
+broadcast:()=>head(t("broadcast"))+`<div class="card">
+<div class="field"><span class="label">${t("audience")}</span><select><option>${t("aud1")}</option><option>${t("aud2")}</option><option>${t("aud3")}</option></select></div>
+<div class="field"><span class="label">${t("textEn")}</span><textarea id="bEn">${SMP_EN}</textarea></div>
+<div class="field"><span class="label">${t("textUz")}</span><textarea id="bUz">${SMP_UZ}</textarea></div>
+<div class="field"><span class="label">${t("btnLabel")}</span><input value="${t("btnTxt")}"></div>
+<div class="field"><span class="label">${t("when")}</span><input type="datetime-local" value="2026-10-21T09:00"></div>
+<div class="grid2"><button class="btn ghost" data-act="preview">${t("preview")}</button><button class="btn" data-act="schedule">${t("schedule")}</button></div>
+</div>
+<div id="pv" class="card" hidden style="margin-top:12px"></div>
+<h2>${t("log")}</h2><div class="card"><div class="row"><span>${t("logA")}</span></div><div class="row"><span class="muted">${t("logB")}</span></div></div>`,
+
+admin:()=>head(t("admin"))+`<h2 style="margin-top:0">${t("roles")}</h2>
+<div class="card">
+<div class="row"><div><div>${t("owner")}</div><div class="label">ID ••••3265 · @Dilshodbek_inv</div></div><span class="pill">${t("owner")}</span></div>
+<div class="row"><div><div>Aziz</div><div class="label">Main group</div></div><span class="pill">${t("roleHead")}</span></div>
+<div class="row"><div><div>Nodira</div><div class="label">IELTS Speaking Club</div></div><span class="pill">${t("roleAdmin")}</span></div>
+</div>
+<h2>${t("handover")}</h2><div class="card"><p class="muted">${t("handoverText")}</p></div>
+<h2>${t("secLog")}</h2><div class="card">
+<div class="row"><span>${t("sec1")}</span></div>
+<div class="row"><span>${t("sec2")}</span></div>
+<div class="row"><span>${t("sec3")}</span></div>
+</div>`,
+
+settings:()=>head(t("settings"))+`<div class="card">
+<div class="row"><span>${t("lang")}</span>${seg()}</div>
+<div class="row"><span>${t("theme")}</span><div class="seg">${["system","light","dark"].map(m=>`<button data-tm="${m}" aria-pressed="${theme===m}">${t(m)}</button>`).join("")}</div></div>
+<div class="row"><span>${t("tz")}</span><select style="width:auto"><option>Asia/Tashkent</option><option>UTC</option></select></div>
+<div class="row"><span>${t("notif")}</span><input type="checkbox" checked style="width:20px;height:20px;min-height:0;accent-color:var(--accent)"></div>
+</div>
+<h2>${t("subs")}</h2><div class="card"><div style="color:var(--accent);word-break:break-all">https://t.me/zaytryn</div><p class="label" style="margin-top:8px">${t("subsNote")}</p></div>
+<h2>${t("customBtns")}</h2><div class="card">
+<div class="row"><div><div>${t("learnBtn")}</div><div class="label">${t("btnRoute")}</div></div><span class="pill">${t("btnPreview")}</span></div>
+<div class="row"><div><div>${t("helpBtn")}</div><div class="label">${t("btnUrl")}</div></div><span class="pill">${t("btnPreview")}</span></div>
+</div>`
+};
+
+const ADMIN_PAGES=["home","chats","board","ai","more","people","broadcast","admin","settings"];
+function render(){
+ if(ADMIN_PAGES.includes(page)&&role!=="admin")page="welcome";
+ document.documentElement.lang=L;
+ document.title=`${t("appName")} · ${t(page)}`;
+ app.innerHTML=`<div class="screen">${S[page]()}</div>`;
+ paintDock();
+ window.scrollTo(0,0);
+}
+function applyTheme(){document.documentElement.dataset.theme=theme==="system"?(matchMedia("(prefers-color-scheme: light)").matches?"light":"dark"):theme}
+matchMedia("(prefers-color-scheme: light)").addEventListener("change",()=>{if(theme==="system")applyTheme()});
+function toast(m){const x=$("#toast");x.textContent=m;x.classList.add("on");clearTimeout(tt);tt=setTimeout(()=>x.classList.remove("on"),1800)}
+function askAI(q){const a=$("#ans");a.innerHTML=`<div class="card"><div class="label"></div><p style="margin:8px 0">${t("ansBody")}</p><p class="label">${t("ansMeta")}</p><p class="label" style="margin-top:10px;color:var(--gold)">${t("aiNote")}</p></div>`;a.querySelector(".label").textContent=q}
+function preview(){const v=$("#pv");v.hidden=false;v.innerHTML=`<div class="label">${t("preview")}</div><p id="p1" style="margin:8px 0 0"></p><p id="p2" class="muted" style="margin-top:6px"></p><button class="btn" style="margin-top:12px;width:100%">${t("btnTxt")}</button>`;$("#p1").textContent=$("#bEn").value;$("#p2").textContent=$("#bUz").value}
+
+document.addEventListener("click",e=>{
+ const el=e.target.closest("button,a");if(!el)return;const d=el.dataset;
+ if(d.act==="start"){page="member";render();return}
+ if(d.act==="panel"){page="home";render();return}
+ if(d.act==="back"){page="welcome";render();return}
+ if(d.act==="check"){checkSub();return}
+ if(d.go){page=d.go;render();return}
+ if(d.lang){L=d.lang;render();return}
+ if(d.tm){theme=d.tm;applyTheme();render();return}
+ if(d.range!=null){range=+d.range;render();return}
+ if(d.q!=null){askAI(t("q"+d.q));return}
+ if(d.act==="ask"){askAI($("#aiIn").value.trim()||t("q1"));return}
+ if(d.act==="sub"){toast(t("demoToast"));return}
+ if(d.act==="preview"){preview();return}
+ if(d.act==="schedule"){toast(t("sent"));return}
+});
+document.addEventListener("input",e=>{if(e.target.id!=="srch")return;const v=e.target.value.toLowerCase();document.querySelectorAll(".prow").forEach(r=>r.style.display=r.textContent.toLowerCase().includes(v)?"":"none")});
+
+async function callCheck(){
+ const initData=(window.Telegram&&Telegram.WebApp&&Telegram.WebApp.initData)||"";
+ if(!initData)return null;
+ try{
+  const r=await fetch("/.netlify/functions/check",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({initData})});
+  const j=await r.json();
+  return j.ok?j:null;
+ }catch(e){return null}
+}
+function applyRole(j){role=j.role;subscribed=j.subscribed;if(j.link)link=j.link}
+async function loadRole(){
+ const j=await callCheck();
+ if(j)applyRole(j);else{role="guest";subscribed=false}
+ render();
+}
+async function checkSub(){
+ const j=await callCheck();
+ if(!j){toast(t("subNo"));return}
+ applyRole(j);
+ toast(subscribed?t("subOk"):t("subNo"));
+ render();
+}
+applyTheme();
+render();
+loadRole();
+</script>
+</body>
+</html>
