@@ -1,0 +1,7 @@
+{
+  "name": "mustafa-english-bot",
+  "private": true,
+  "dependencies": {
+    "@netlify/blobs": "^8.0.0"
+  }
+}
